@@ -35,18 +35,32 @@ contract ROUX_ReferralBasedCrowdsale is MintedCrowdsale, PostDeliveryCrowdsale, 
      * @param amount amount of tokens purchased
      */
     event DiscountTokensIssued(address indexed beneficiary, uint256 amount);
+    /**
+     * Event for token purchase logging
+     * @param beneficiary who got the tokens
+     * @param amount amount of tokens purchased
+     */
     event ReferralTokensIssued(address indexed beneficiary, uint256 amount);
+    /**
+     * Event for whitelist logging
+     * @param beneficiary newly whitelisted account
+     */
     event ReferralAccountAdded(address indexed beneficiary);
+    /**
+     * Event for whitelist logging
+     * @param beneficiary newly whitelisted account
+     * @param referredBy address who referred the new account
+     */
     event ReferredAccountAdded(address indexed beneficiary, address indexed referredBy);
     /**
-     * @dev Revertjhkrs _purchaseAmount is less than min purchase amount.
+     * @dev Reverts if _purchaseAmount is less than min purchase amount.
      */
     modifier meetsMinimumPurchase(uint256 _purchaseAmount) {
       require(_purchaseAmount >= mMinPurchaseAmount);
       _;
     }
     /**
-     * @dev Reverts _referralSourceAddress is not present in mBackers.
+     * @dev Reverts if _referralSourceAddress is already present in mBackers.
      */
     modifier isNewReferral(address _referralSourceAddress) {
       require(!mBackers[_referralSourceAddress].isValid);
@@ -54,7 +68,7 @@ contract ROUX_ReferralBasedCrowdsale is MintedCrowdsale, PostDeliveryCrowdsale, 
     }
 
     /**
-     * @dev Reverts _referralSourceAddress is not present in mBackers.
+     * @dev Reverts if _referralSourceAddress is not present in mBackers.
      */
     modifier isValidReferral(address _referralSourceAddress) {
       require(mBackers[_referralSourceAddress].isValid);
@@ -62,7 +76,7 @@ contract ROUX_ReferralBasedCrowdsale is MintedCrowdsale, PostDeliveryCrowdsale, 
     }
 
     /**
-     * @dev Reverts _referralFee is more than max aloud fee.
+     * @dev Reverts if _referralFee is more than max aloud fee.
      */
     modifier isValidReferralFee(uint256 _referralFee) {
       require(_referralFee <= mMaxReferralPercentageFee);
@@ -71,7 +85,7 @@ contract ROUX_ReferralBasedCrowdsale is MintedCrowdsale, PostDeliveryCrowdsale, 
     }
 
     /**
-     * @dev Reverts _discountPercentage is not within valid range.
+     * @dev Reverts if _discountPercentage is not within valid range.
      */
     modifier isValidDiscountPercentage(uint256 _discountPercentage) {
       require(_discountPercentage <= mMaxDiscount);
@@ -163,10 +177,9 @@ contract ROUX_ReferralBasedCrowdsale is MintedCrowdsale, PostDeliveryCrowdsale, 
         if(mBackers[referralSource].referralFee > 0)
         {
           //calculate number of tokens to issue referral source
-          uint256 referralTokenAmount = numTokensIssued.mul(mBackers[referralSource].discount).div(oneHundred);
+          uint256 referralTokenAmount = numTokensIssued.mul(mBackers[referralSource].referralFee).div(oneHundred);
           //issue tokens to purchaser's reference account
-          _deliverTokens(referralSource, referralTokenAmount);
-
+          super._deliverTokens(referralSource, referralTokenAmount);
           ReferralTokensIssued(referralSource, referralTokenAmount);
         }
       }

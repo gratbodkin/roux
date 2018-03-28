@@ -21,8 +21,8 @@ contract('ROUX_ReferralBasedCrowdsale', function  ([_, owner, investor, referral
   const lessThanCap = ether(60);
   const accountStartingBalance = 1000000;
   const value = 100;
-  const initialRate = new BigNumber(10000);
-  const finalRate = new BigNumber(5000);
+  const initialRate = new BigNumber(9166);
+  const finalRate = new BigNumber(5500);
   const rateAtTime150 = new BigNumber(9166);
   const rateAtTime300 = new BigNumber(9165);
   const rateAtTime1500 = new BigNumber(9157);
@@ -127,19 +127,10 @@ contract('ROUX_ReferralBasedCrowdsale', function  ([_, owner, investor, referral
             onePercentReferralReward,
             { from: owner });
           let res = await this.crowdsale.buyTokens(referralSource, { value: ether(1), from: referralSource });
-          let res2 = await this.crowdsale.buyTokens(purchaser, { value: ether(100), from: purchaser });
           await increaseTimeTo(this.afterClosingTime);
-          await this.crowdsale.withdrawTokens({ from: purchaser });
           await this.crowdsale.withdrawTokens({ from: referralSource });
           let balance = await this.token.balanceOf(referralSource);
-          let balance2 = await this.token.balanceOf(purchaser);
-          await this.paymentSplitter.claim({from: owner1});
-          await this.paymentSplitter.claim({from: owner2});
-          //TODO: NEED TO ADD SOME ACTUAL ASSERT STATEMENTS HERE!
-          // console.log("20% Discount Balance = " +  web3.fromWei(balance.toNumber(), "ether"));
-          // console.log("5% Discount Balance = " +  web3.fromWei(balance2.toNumber(), "ether"));
-          // console.log("75% OWNER BALANCE = " + (web3.fromWei(web3.eth.getBalance(owner1), "ether") - 1000000));
-          // console.log("25% OWNER BALANCE = " + ( web3.fromWei(web3.eth.getBalance(owner2), "ether") - 1000000));
+          balance.should.be.bignumber.equal(ether(1).mul(initialRate).mul(1.20));
         });
 
         it('should allow referred account to purchase tokens, then issue token fee to referral source', async function () {
@@ -159,15 +150,12 @@ contract('ROUX_ReferralBasedCrowdsale', function  ([_, owner, investor, referral
           await increaseTimeTo(this.afterClosingTime);
           await this.crowdsale.withdrawTokens({ from: referredAccount });
           await this.crowdsale.withdrawTokens({ from: investor });
-          let balance = await this.token.balanceOf(investor);
-          let balance2 = await this.token.balanceOf(referredAccount);
-          await this.paymentSplitter.claim({from: owner1});
-          await this.paymentSplitter.claim({from: owner2});
-          //TODO: NEED TO ADD SOME ACTUAL ASSERT STATEMENTS HERE!
-          // console.log("Referral Source BALANCE = " + web3.fromWei(balance.toNumber(), "ether"));
-          // console.log("Referred Account Balance BALANCE = " + web3.fromWei(balance2.toNumber(), "ether"));
-          // console.log("75% OWNER BALANCE = " + (web3.fromWei(web3.eth.getBalance(owner1), "ether") - 1000000));
-          // console.log("25% OWNER BALANCE = " +  (web3.fromWei(web3.eth.getBalance(owner2), "ether") - 1000000));
+          let refferalSourceBalance = await this.token.balanceOf(investor);
+          let referredBalance = await this.token.balanceOf(referredAccount);
+          referredBalance.should.be.bignumber.equal(ether(100).mul(initialRate));
+          let referralFeeBal = referredBalance.mul(0.03);
+          let referralPurchaseBal = ether(1).mul(initialRate).mul(1.20);
+          refferalSourceBalance.should.be.bignumber.equal(referralFeeBal.add(referralPurchaseBal));
         });
 
       });

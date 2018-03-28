@@ -2,8 +2,8 @@ const config = require('../truffle-config.js');
 require('babel-register');
 require('babel-polyfill');
 
-var CRWNRR_ReferralBasedCrowdsale = artifacts.require("./CRWNRR_ReferralBasedCrowdsale.sol");
-var CRWNRR_Token = artifacts.require("./CRWNRR_Token.sol");
+var CRWNRR_ReferralBasedCrowdsale = artifacts.require("./ROUX_ReferralBasedCrowdsale.sol");
+var CRWNRR_Token = artifacts.require("./ROUX_Token.sol");
 var SplitPayment = artifacts.require("./SplitPayment.sol");
 
 
