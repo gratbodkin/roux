@@ -24,7 +24,6 @@ contract ROUX_ReferralBasedCrowdsale is MintedCrowdsale, PostDeliveryCrowdsale, 
 
     mapping(address => Backer) mBackers;
 
-    uint256 mMinPurchaseAmount;
     uint256 mMaxReferralPercentageFee = 3;
     uint256 mMaxDiscount = 20;
     uint256 oneHundred = 100;
@@ -52,13 +51,7 @@ contract ROUX_ReferralBasedCrowdsale is MintedCrowdsale, PostDeliveryCrowdsale, 
      * @param referredBy address who referred the new account
      */
     event ReferredAccountAdded(address indexed beneficiary, address indexed referredBy);
-    /**
-     * @dev Reverts if _purchaseAmount is less than min purchase amount.
-     */
-    modifier meetsMinimumPurchase(uint256 _purchaseAmount) {
-      require(_purchaseAmount >= mMinPurchaseAmount);
-      _;
-    }
+
     /**
      * @dev Reverts if _referralSourceAddress is already present in mBackers.
      */
@@ -101,7 +94,6 @@ contract ROUX_ReferralBasedCrowdsale is MintedCrowdsale, PostDeliveryCrowdsale, 
      * @param _cap Crowdsale closing time
      * @param _wallet Crowdsale opening time
      * @param _token Crowdsale closing time
-    * @param _minimumPurchase minimum purchase
      */
     function ROUX_ReferralBasedCrowdsale(
     uint256 _openingTime,
@@ -110,36 +102,13 @@ contract ROUX_ReferralBasedCrowdsale is MintedCrowdsale, PostDeliveryCrowdsale, 
     uint256 _finalRate,
     uint256 _cap,
     address _wallet,
-    ROUX_Token _token,
-    uint256 _minimumPurchase)
+    ROUX_Token _token)
     public
     Crowdsale(_initialRate, _wallet, _token)
     TimedCrowdsale(_openingTime, _closingTime)
     IncreasingPriceCrowdsale(_initialRate, _finalRate)
     CappedCrowdsale(_cap)
     {
-      mMinPurchaseAmount = _minimumPurchase;
-    }
-
-    /**
-     * @dev Extend parent behavior requiring beneficiary to be in whitelist.
-     * @param _beneficiary Token beneficiary
-     * @param _weiAmount Amount of wei contributed
-     */
-    function _preValidatePurchase(address _beneficiary, uint256 _weiAmount)
-    internal meetsMinimumPurchase(_weiAmount) {
-      super._preValidatePurchase(_beneficiary, _weiAmount);
-    }
-
-    /**
-     * @dev Get percentage of a total value
-     * @param totalAmount value equal to 100% of total quantity
-     * @param percentage percentage as integer i.e. 3 == 3%
-     */
-    function getPercentageOf(uint256 totalAmount, uint256 percentage)
-    public view returns(uint256)
-    {
-      return totalAmount.mul(percentage).div(oneHundred);
     }
 
     /**
@@ -183,16 +152,6 @@ contract ROUX_ReferralBasedCrowdsale is MintedCrowdsale, PostDeliveryCrowdsale, 
           ReferralTokensIssued(referralSource, referralTokenAmount);
         }
       }
-    }
-
-    /**
-     * @dev Can be overridden to add finalization logic. The overriding function
-     * should call super.finalization() to ensure the chain of finalization is
-     * executed entirely.
-     */
-    function finalization() internal
-    {
-      //Use payment splitter to issue tokens?
     }
 
     /**

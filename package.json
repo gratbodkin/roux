@@ -1,6 +1,6 @@
 {
-  "name": "CrownRoyaltyRewards",
-  "version": "0.1",
+  "name": "ROUX",
+  "version": "1.0.0",
   "description": "Secure Smart Contract Implementation for Crown Royalty Rewards Platform",
   "scripts": {
     "test": "scripts/test.sh",
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gratbodkin/CrownRoyaltyRewards.git"
+    "url": "https://github.com/roux-io/roux.git"
   },
   "keywords": [
     "solidity",
@@ -24,16 +24,14 @@
     "contracts",
     "security",
     "zeppelin",
-    "crwnrr",
-    "CrownRoyaltyRewards",
-    "royalty-rewards"
+    "roux"
   ],
   "author": "Grat Bodkin <tim@royaltyrewards.io>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/gratbodkin/CrownRoyaltyRewards/issues"
+    "url": "https://github.com/roux-io/roux/issues"
   },
-  "homepage": "https://github.com/gratbodkin/CrownRoyaltyRewards",
+  "homepage": "https://github.com/roux-io/roux",
   "devDependencies": {
     "babel-polyfill": "^6.23.0",
     "babel-preset-es2015": "^6.18.0",

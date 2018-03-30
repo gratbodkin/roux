@@ -55,8 +55,7 @@ contract('ROUX_ReferralBasedCrowdsale', function  ([_, owner, investor, referral
         finalRate,
         cap,
         this.paymentSplitter.address,
-        this.token.address,
-        minimumPurchase,
+        this.token.address
         {from: owner});
       await this.token.transferOwnership(this.crowdsale.address);
     });
