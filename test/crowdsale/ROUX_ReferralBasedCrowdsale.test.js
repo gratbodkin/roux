@@ -30,10 +30,10 @@ contract('ROUX_ReferralBasedCrowdsale', function  ([_, owner, investor, referral
   const rateAtTime150000 = new BigNumber(8257);
   const rateAtTime450000 = new BigNumber(6439);
   const minimumPurchase = ether(1);
-  const threePercentRefferalReward = 3;
-  const twntyPercentDiscount = 20;
-  const onePercentReferralReward = 1;
-  const fivePercentDiscount = 5;
+  const threePercentRefferalReward = 300;
+  const twntyPercentDiscount = 2000;
+  const onePercentReferralReward = 100;
+  const fivePercentDiscount = 500;
     before(async function () {
       // Advance to the next block to correctly read time in the solidity "now" function interpreted by testrpc
       await advanceBlock();
@@ -55,7 +55,7 @@ contract('ROUX_ReferralBasedCrowdsale', function  ([_, owner, investor, referral
         finalRate,
         cap,
         this.paymentSplitter.address,
-        this.token.address
+        this.token.address,
         {from: owner});
       await this.token.transferOwnership(this.crowdsale.address);
     });
@@ -71,8 +71,8 @@ contract('ROUX_ReferralBasedCrowdsale', function  ([_, owner, investor, referral
     });
 
     it('should add referred account to whitelist', async function () {
-      const percentReferralReward = 3;
-      const percentDiscount = 20;
+      const percentReferralReward = 300;
+      const percentDiscount = 2000;
       await increaseTimeTo(this.openingTime);
       await this.crowdsale.addReferralAccount(
         authorized,
@@ -86,8 +86,8 @@ contract('ROUX_ReferralBasedCrowdsale', function  ([_, owner, investor, referral
     });
 
     it('should not add non-referred account to whitelist', async function () {
-      const percentReferralReward = 3;
-      const percentDiscount = 20;
+      const percentReferralReward = 300;
+      const percentDiscount = 2000;
       await increaseTimeTo(this.openingTime);
       await this.crowdsale.addReferralAccount(
         authorized,
