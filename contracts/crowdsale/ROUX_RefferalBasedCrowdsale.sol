@@ -23,13 +23,8 @@ contract ROUX_ReferralBasedCrowdsale is MintedCrowdsale, PostDeliveryCrowdsale, 
     }
 
     mapping(address => Backer) mBackers;
-
-    // Maximum allowable referral reward percentage (i.e. 300 = 3%)
-    uint256 mMaxReferralPercentageFee = 300;
-    // Maximum allowable token discount percentage (i.e. 2000 = 20%)
-    uint256 mMaxDiscount = 2000;
     // Used to calculate discounts and referral rewards
-    uint256 percentageDividend = 10000;
+    uint256 mPercentageMaximum = 10000; // equivalent to 100%
 
     /**
      * Event for token purchase logging
@@ -72,20 +67,11 @@ contract ROUX_ReferralBasedCrowdsale is MintedCrowdsale, PostDeliveryCrowdsale, 
     }
 
     /**
-     * @dev Reverts if _referralFee is more than max aloud fee.
+     * @dev Reverts if percentage is greater than 100%
      */
-    modifier isValidReferralFee(uint256 _referralFee) {
-      require(_referralFee <= mMaxReferralPercentageFee);
-      require(_referralFee >= 0);
-      _;
-    }
-
-    /**
-     * @dev Reverts if _discountPercentage is not within valid range.
-     */
-    modifier isValidDiscountPercentage(uint256 _discountPercentage) {
-      require(_discountPercentage <= mMaxDiscount);
-      require(_discountPercentage >= 0);
+    modifier isValidPercentage(uint256 _percentage) {
+      require(_percentage <= mPercentageMaximum);
+      require(_percentage >= 0);
       _;
     }
     /**
@@ -126,7 +112,7 @@ contract ROUX_ReferralBasedCrowdsale is MintedCrowdsale, PostDeliveryCrowdsale, 
       {
         if(mBackers[_beneficiary].discount > 0)
         {
-          uint256 numExtraTokens = _tokenAmount.mul(mBackers[_beneficiary].discount).div(percentageDividend);
+          uint256 numExtraTokens = _tokenAmount.mul(mBackers[_beneficiary].discount).div(mPercentageMaximum);
           numTokensIssued = numExtraTokens.add(_tokenAmount);
           DiscountTokensIssued(_beneficiary, numExtraTokens);
         }
@@ -149,7 +135,7 @@ contract ROUX_ReferralBasedCrowdsale is MintedCrowdsale, PostDeliveryCrowdsale, 
         if(mBackers[referralSource].referralFee > 0)
         {
           //calculate number of tokens to issue referral source
-          uint256 referralTokenAmount = numTokensIssued.mul(mBackers[referralSource].referralFee).div(percentageDividend);
+          uint256 referralTokenAmount = numTokensIssued.mul(mBackers[referralSource].referralFee).div(mPercentageMaximum);
           //issue tokens to purchaser's reference account
           super._deliverTokens(referralSource, referralTokenAmount);
           ReferralTokensIssued(referralSource, referralTokenAmount);
@@ -165,8 +151,8 @@ contract ROUX_ReferralBasedCrowdsale is MintedCrowdsale, PostDeliveryCrowdsale, 
      */
     function addReferralAccount(address _beneficiary, uint256 _discountPercentage, uint256 _referralPercentageFee)
     isNewReferral(_beneficiary)
-    isValidReferralFee(_referralPercentageFee)
-    isValidDiscountPercentage(_discountPercentage)
+    isValidPercentage(_referralPercentageFee)
+    isValidPercentage(_discountPercentage)
     external onlyOwner
     returns (bool) {
         mBackers[_beneficiary].referralFee = _referralPercentageFee;
