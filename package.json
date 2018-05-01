@@ -59,6 +59,7 @@
   "dependencies": {
     "dotenv": "^4.0.0",
     "ethjs-abi": "^0.2.1",
-    "remixd": "^0.1.8-alpha.2"
+    "remixd": "^0.1.8-alpha.2",
+    "truffle-privatekey-provider": "0.0.6"
   }
 }
